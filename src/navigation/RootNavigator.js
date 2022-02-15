@@ -1,4 +1,4 @@
-import React, {useState, createContext, useContext, useEffect} from "react";
+import React, {useState, useContext, useEffect} from "react";
 import { View, ActivityIndicator } from "react-native";
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
@@ -43,7 +43,6 @@ export default function RootNavigator({context}) {
 
 function ChatStack() {
     return (
-      // <Stack.Navigator screenOptions={{headerShown: false}}>
       <Stack.Navigator defaultScreenOptions={Home}>
         <Stack.Screen name="Home" component={Home}/>
         <Stack.Screen name="Chat" component={Chat}/>
@@ -53,7 +52,7 @@ function ChatStack() {
   
 function AuthStack() {
     return (
-      <Stack.Navigator defaultScreenOptions={Login}>
+      <Stack.Navigator defaultScreenOptions={Login} screenOptions={{headerShown: false}}>
         <Stack.Screen name="Login" component={Login}/>
         <Stack.Screen name="Signup" component={Signup}/>
       </Stack.Navigator>

@@ -1,62 +1,78 @@
-import React, { useState } from "react";
-import { signInWithEmailAndPassword } from 'firebase/auth';
-import { auth } from '../config/Firebase';
-import { Alert, Image, StyleSheet, View, SafeAreaView, Text, TextInput, TouchableOpacity } from "react-native";
+import React from "react";
+import { Image, StyleSheet, View, SafeAreaView, Text, TextInput, TouchableOpacity } from "react-native";
+import { login } from "../actions/UserActions";
+import { connect } from "react-redux";
 const backImage = require("../../assets/logo.png");
 
-export default function Login({ navigation }) {
+const mapStateToProps = (state) => {
+    return {
+        user: state.user
+    }
+}
 
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
-
-    const onHandleLogin = () => {
-        if (email !== "" && password !== "") {
-            signInWithEmailAndPassword(auth, email, password)
-            .then(() => console.log("Login OK!"))
-            .catch(error => Alert.alert("Login error", error.message));
+const mapDispatchToProps = (dispatch) => {
+    return {
+        login: (email, password) => { 
+            dispatch(login(email, password)) 
         }
     }
-
-    return (
-        <View style={styles.container}>
-            <Image source={backImage} style={styles.backImage}></Image>
-            <View style={styles.whiteSheet}>
-                <SafeAreaView style={styles.form}>
-                    <Text style={styles.title}>Login</Text>
-                    <TextInput 
-                        style={styles.input}
-                        placeholder="Enter email"
-                        autoCapitalize="none"
-                        keyboardType="email-address"
-                        textContentType="emailAddress"
-                        autoFocus={true}
-                        value={email}
-                        onChangeText={text => setEmail(text)}
-                    />
-                    <TextInput 
-                        style={styles.input}
-                        placeholder="Enter password"
-                        autoCapitalize="none"
-                        autoCorrect={false}
-                        secureTextEntry={true}
-                        textContentType="password"
-                        value={password}
-                        onChangeText={text => setPassword(text)}
-                    />
-                    <TouchableOpacity style={styles.button} onPress={onHandleLogin}>
-                        <Text style={{fontWeight: 'bold', color: '#fff', fontSize: 18}}> Log In</Text>
-                    </TouchableOpacity>
-                    <View style={{marginTop: 20, flexDirection: 'row', alignItems: 'center', alignSelf: 'center'}}>
-                        <Text style={{fontWeight: '600', color: 'gray', fontSize: 14}}>Don't have an account? </Text>
-                        <TouchableOpacity onPress={() => navigation.navigate("Signup")}>
-                            <Text style={{fontWeight: '600', color: '#3EBDC9', fontSize: 14}}> Sign Up</Text>
-                        </TouchableOpacity>
-                    </View>
-                </SafeAreaView>
-            </View>
-        </View>
-    );
 }
+
+class Login extends React.Component {
+
+    constructor(props) {
+        super(props);
+    }
+
+    onLogin = () => {
+        this.props.login(this.email, this.password);
+    }
+
+    render(){
+        return (
+            <View style={styles.container}>
+                <Image source={backImage} style={styles.backImage}></Image>
+                <View style={styles.whiteSheet}>
+                    <SafeAreaView style={styles.form}>
+                        <Text style={styles.title}>Login</Text>
+                        <TextInput 
+                            style={styles.input}
+                            placeholder="Enter email"
+                            autoCapitalize="none"
+                            keyboardType="email-address"
+                            textContentType="emailAddress"
+                            autoFocus={true}
+                            value={this.email}
+                            onChangeText={text => this.email = text}
+                        />
+                        <TextInput 
+                            style={styles.input}
+                            placeholder="Enter password"
+                            autoCapitalize="none"
+                            autoCorrect={false}
+                            secureTextEntry={true}
+                            textContentType="password"
+                            value={this.password}
+                            onChangeText={text => this.password = text}
+                        />
+                        <TouchableOpacity style={styles.button} onPress={this.onLogin}>
+                            <Text style={{fontWeight: 'bold', color: '#fff', fontSize: 18}}> Log In</Text>
+                        </TouchableOpacity>
+                        <View style={{marginTop: 20, flexDirection: 'row', alignItems: 'center', alignSelf: 'center'}}>
+                            <Text style={{fontWeight: '600', color: 'gray', fontSize: 14}}>Don't have an account? </Text>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate("Signup")}>
+                                <Text style={{fontWeight: '600', color: '#3EBDC9', fontSize: 14}}> Sign Up</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </SafeAreaView>
+                </View>
+            </View>
+        );
+    }
+
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Login);
 
 const styles = StyleSheet.create({
     container: {
