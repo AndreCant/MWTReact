@@ -1,4 +1,4 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { Alert } from "react-native";
 import { auth } from "../config/Firebase";
 
@@ -18,6 +18,22 @@ export function login(email, password) {
             )
         }).catch(error => {
             Alert.alert("Login error", error.message)
+        });
+    }
+}
+
+export function signup(email, password) {
+    return (dispatch) => {
+        createUserWithEmailAndPassword(auth, email, password)
+        .then(() => {
+            console.log("Signup OK!");
+            dispatch(
+                setUser({
+                    email: email
+                })
+            )
+        }).catch(error => {
+            Alert.alert("Signup error", error.message)
         });
     }
 }

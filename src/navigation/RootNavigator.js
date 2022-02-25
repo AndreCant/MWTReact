@@ -1,5 +1,6 @@
 import React, {useState, useContext, useEffect} from "react";
-import { View, ActivityIndicator } from "react-native";
+import { View, ActivityIndicator, Alert } from "react-native";
+import { Ionicons } from '@expo/vector-icons';
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { onAuthStateChanged } from "firebase/auth";
@@ -9,6 +10,8 @@ import Chat from "../components/Chat";
 import Login from "../components/Login";
 import Signup from "../components/Signup";
 import Home from "../components/Home";
+import Profile from "../components/Profile";
+import EditProfile from "../components/EditProfile";
 
 const Stack = createStackNavigator();
 
@@ -43,9 +46,18 @@ export default function RootNavigator({context}) {
 
 function ChatStack() {
     return (
-      <Stack.Navigator defaultScreenOptions={Home}>
+      <Stack.Navigator 
+        defaultScreenOptions={Home} 
+        screenOptions={{
+            headerBackImage: ({tintColor}) => {
+              return <Ionicons name="arrow-back" size={24} color={tintColor} />
+            }
+        }}>
+
         <Stack.Screen name="Home" component={Home}/>
         <Stack.Screen name="Chat" component={Chat}/>
+        <Stack.Screen name="Profile" component={Profile}/>
+        <Stack.Screen name="EditProfile" component={EditProfile}/>
       </Stack.Navigator>
     );
 }
