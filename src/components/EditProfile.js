@@ -17,6 +17,8 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as ImagePicker from 'expo-image-picker';
 import { windowHeight } from '../constants/Dimension';
 import { connect } from "react-redux";
+import { setAvatar } from "../actions/UserActions";
+import { ref, uploadString, getDownloadURL, getStorage, uploadBytes  } from "firebase/storage";
 const backImage = require("../../assets/logo.png");
 
 const mapStateToProps = (state) => {
@@ -40,7 +42,6 @@ class EditProfile extends React.Component {
 
     constructor(props) {
         super(props);
-        console.log(this.props.user);
     }
 
     setUserData = (obj) => {
@@ -48,22 +49,12 @@ class EditProfile extends React.Component {
     }
     
     onSetAvatar = (imageUri) => {
-      this.props.setAvatar(imageUri);
+      this.uploadImage(imageUri).then(url => {
+        this.props.setAvatar(url);
+      }).catch(error => {
+        Alert.alert("Upload image error", error.message);
+      });
     }
-
-    // takePhotoFromCamera = () => {
-    //     ImagePicker.openCamera({
-    //       compressImageMaxWidth: 300,
-    //       compressImageMaxHeight: 300,
-    //       cropping: true,
-    //       compressImageQuality: 0.7,
-    //     }).then((image) => {
-    //       console.log(image);
-    //       const imageUri = Platform.OS === 'ios' ? image.sourceURL : image.path;
-    //       setImage(imageUri);
-    //       this.bs.current.snapTo(1);
-    //     });
-    // };
     
     choosePhotoFromLibrary = () => {
         (async () => {
@@ -82,14 +73,61 @@ class EditProfile extends React.Component {
               height: 300,
               cropping: true,
               compressImageQuality: 0.7,
-            }).then((image) => {
-              console.log(image);
-              const imageUri = Platform.OS === 'ios' ? image.sourceURL : image.path;
-              this.onSetAvatar(imageUri);
-              // this.bs.current.snapTo(1);
+            }).then(image => {
+              if (!image.cancelled) {
+                const imageUri = Platform.OS === 'ios' ? image.sourceURL : image.uri;
+                this.onSetAvatar(imageUri);
+              }
             });
         })();
     };
+
+    uploadImage = async (imageUri) => {
+      const blob = await new Promise((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+          xhr.onload = () => resolve(xhr.response);
+          xhr.onerror = () => reject(new TypeError('Network error'));
+          xhr.responseType = 'blob';
+          xhr.open('GET', imageUri, true);
+          xhr.send(null);
+      });
+
+      const storage = getStorage();
+      const storageRef = ref(storage, `images/${new Date().toISOString()}`);
+
+      return Promise.resolve(uploadBytes(storageRef, blob).then(snapshot => {
+        console.log(snapshot);
+        return Promise.resolve(getDownloadURL(snapshot.ref)
+        .then(url => {
+            console.log('URL', url);
+            blob.close();
+            return url;
+        }));
+      }).catch(error => {
+        console.log('snap error', error);
+        blob.close();
+        return;
+      }))
+  
+      // snapshot.on(
+      //     storage.TaskEvent.STATE_CHANGED,
+      //     () => { 
+      //         console.log('okok')
+      //     },
+      //     error => {
+      //         console.log('snap error');
+      //         blob.close();
+      //         return;
+      //     },
+      //     () => {
+      //         snapshot.snapshot.ref.getDownloadURL().then(url => {
+      //             console.log('URL', url);
+      //             blob.close();
+      //             return url;
+      //         })
+      //     }
+      // );
+    }
 
     render(){
         return (
@@ -115,7 +153,8 @@ class EditProfile extends React.Component {
                       }}>
                       <ImageBackground
                         source={{
-                          uri: 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'
+                          // uri: 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'
+                          uri: this.props.user.photoURL || 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'
                         }}
                         style={{
                           height: 100, 

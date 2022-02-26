@@ -44,7 +44,6 @@ export default function RootNavigator() {
         </View>
       );
     }else{
-      console.log(user);
       return (
         <NavigationContainer>
           { user ? <ChatStack /> : <AuthStack />}

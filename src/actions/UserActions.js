@@ -3,7 +3,8 @@ import { Alert } from "react-native";
 import { auth } from "../config/Firebase";
 
 export const UserActions = {
-    SET_USER: "SET_USER"
+    SET_USER: "SET_USER",
+    SET_IMAGE: "SET_IMAGE"
 }
 
 export function login(email, password) {
@@ -28,8 +29,17 @@ export function signup(email, password) {
     }
 }
 
-export function setAvatar(imageUri){
-    updateProfile()
+export function setAvatar(imageUrl){
+    updateProfile(auth.currentUser, {
+        photoURL: imageUrl
+    }).then(() => {
+        return {
+            type: UserActions.SET_IMAGE,
+            payload: url
+        }
+    }).catch((error) => {
+        Alert.alert("Update image error", error.message);
+    });
 }
 
 export function setUser(user){

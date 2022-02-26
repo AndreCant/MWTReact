@@ -12,6 +12,16 @@ export default function UserReducer(state = initialUserState, action){
                 ...state,
                 user: action.payload
             }
+
+        case UserActions.SET_IMAGE:
+            return {
+                ...state,
+                user: {
+                    ...state.user,
+                    photoURL: action.payload
+                }
+            }
+            
         default: return state;
     }
 }
