@@ -1,10 +1,11 @@
-import React, {useState, useContext, useEffect} from "react";
-import { View, ActivityIndicator, Alert } from "react-native";
+import React, {useState, useEffect} from "react";
+import { View, ActivityIndicator } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
 import { NavigationContainer } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../config/Firebase";
+import { setUser } from "../actions/UserActions";
 
 import Chat from "../components/Chat";
 import Login from "../components/Login";
@@ -12,22 +13,29 @@ import Signup from "../components/Signup";
 import Home from "../components/Home";
 import Profile from "../components/Profile";
 import EditProfile from "../components/EditProfile";
+import { useDispatch, useSelector } from "react-redux";
+import { sUser } from "../reducers/UserReducer";
 
 const Stack = createStackNavigator();
 
-export default function RootNavigator({context}) {
-    const { user, setUser } = useContext(context);
+export default function RootNavigator() {
     const [loading, setLoading] = useState(true);
+    const dispatch = useDispatch();
+    const { user } = useSelector(sUser);
     
     useEffect(() => {
       const unsubscribe = onAuthStateChanged(
         auth,
         async authenticatedUser => {
-          authenticatedUser ? setUser(authenticatedUser) : setUser(null);
+          if (authenticatedUser) {
+            dispatch(setUser(authenticatedUser));
+          }else{
+            dispatch(setUser(null));
+          }
           setLoading(false);
       });
       return () => unsubscribe();
-    }, [user]);
+    }, []);
   
     if (loading) {
       return (
@@ -36,6 +44,7 @@ export default function RootNavigator({context}) {
         </View>
       );
     }else{
+      console.log(user);
       return (
         <NavigationContainer>
           { user ? <ChatStack /> : <AuthStack />}

@@ -1,41 +1,35 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
 import { Alert } from "react-native";
 import { auth } from "../config/Firebase";
 
 export const UserActions = {
-    SET_USER: "SET_USER",
+    SET_USER: "SET_USER"
 }
 
 export function login(email, password) {
-    return (dispatch) => {
+    return () => {
         signInWithEmailAndPassword(auth, email, password)
         .then(() => {
             console.log("Login OK!");
-            dispatch(
-                setUser({
-                    email: email
-                })
-            )
         }).catch(error => {
-            Alert.alert("Login error", error.message)
+            Alert.alert("Login error", error.message);
         });
     }
 }
 
 export function signup(email, password) {
-    return (dispatch) => {
+    return () => {
         createUserWithEmailAndPassword(auth, email, password)
         .then(() => {
             console.log("Signup OK!");
-            dispatch(
-                setUser({
-                    email: email
-                })
-            )
         }).catch(error => {
-            Alert.alert("Signup error", error.message)
+            Alert.alert("Signup error", error.message);
         });
     }
+}
+
+export function setAvatar(imageUri){
+    updateProfile()
 }
 
 export function setUser(user){
@@ -44,3 +38,4 @@ export function setUser(user){
         payload: user
     }
 }
+

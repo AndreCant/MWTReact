@@ -27,9 +27,9 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        // login: (email, password) => { 
-        //     dispatch(login(email, password)) 
-        // }
+        setAvatar: (imageUri) => { 
+            dispatch(setAvatar(imageUri)) 
+        }
     }
 }
 
@@ -37,29 +37,33 @@ class EditProfile extends React.Component {
 
     userData = {};
     image = {};
-    bs = React.createRef();
 
     constructor(props) {
         super(props);
+        console.log(this.props.user);
     }
 
     setUserData = (obj) => {
 
-    } 
+    }
+    
+    onSetAvatar = (imageUri) => {
+      this.props.setAvatar(imageUri);
+    }
 
-    takePhotoFromCamera = () => {
-        ImagePicker.openCamera({
-          compressImageMaxWidth: 300,
-          compressImageMaxHeight: 300,
-          cropping: true,
-          compressImageQuality: 0.7,
-        }).then((image) => {
-          console.log(image);
-          const imageUri = Platform.OS === 'ios' ? image.sourceURL : image.path;
-          setImage(imageUri);
-          this.bs.current.snapTo(1);
-        });
-    };
+    // takePhotoFromCamera = () => {
+    //     ImagePicker.openCamera({
+    //       compressImageMaxWidth: 300,
+    //       compressImageMaxHeight: 300,
+    //       cropping: true,
+    //       compressImageQuality: 0.7,
+    //     }).then((image) => {
+    //       console.log(image);
+    //       const imageUri = Platform.OS === 'ios' ? image.sourceURL : image.path;
+    //       setImage(imageUri);
+    //       this.bs.current.snapTo(1);
+    //     });
+    // };
     
     choosePhotoFromLibrary = () => {
         (async () => {
@@ -81,8 +85,8 @@ class EditProfile extends React.Component {
             }).then((image) => {
               console.log(image);
               const imageUri = Platform.OS === 'ios' ? image.sourceURL : image.path;
-              setImage(imageUri);
-              this.bs.current.snapTo(1);
+              this.onSetAvatar(imageUri);
+              // this.bs.current.snapTo(1);
             });
         })();
     };
@@ -111,8 +115,12 @@ class EditProfile extends React.Component {
                       }}>
                       <ImageBackground
                         source={{
-                          uri: 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'}}
-                        style={{height: 100, width: 100}}
+                          uri: 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'
+                        }}
+                        style={{
+                          height: 100, 
+                          width: 100
+                        }}
                         imageStyle={{borderRadius: 15}}>
                         <View
                           style={{
