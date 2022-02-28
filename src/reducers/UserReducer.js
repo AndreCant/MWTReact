@@ -21,6 +21,17 @@ export default function UserReducer(state = initialUserState, action){
                     photoURL: action.payload
                 }
             }
+
+        case UserActions.SET_DATA:
+            return {
+                ...state,
+                user: {
+                    ...state.user,
+                    displayName: action.payload.username,
+                    email: action.payload.email,
+                    phoneNumber: action.payload.phone
+                }
+            }
             
         default: return state;
     }

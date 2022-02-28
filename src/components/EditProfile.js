@@ -17,7 +17,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as ImagePicker from 'expo-image-picker';
 import { windowHeight } from '../constants/Dimension';
 import { connect } from "react-redux";
-import { setAvatar } from "../actions/UserActions";
+import { setAvatar, setUserData } from "../actions/UserActions";
 import { ref, uploadString, getDownloadURL, getStorage, uploadBytes  } from "firebase/storage";
 const backImage = require("../../assets/logo.png");
 
@@ -29,23 +29,26 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        setAvatar: (imageUri) => { 
-            dispatch(setAvatar(imageUri)) 
+        setAvatar: (url) => { 
+            dispatch(setAvatar(url));
+        },
+        setUserData: (username, email, phone) => {
+          dispatch(setUserData(username, email, phone));
         }
     }
 }
 
 class EditProfile extends React.Component {
 
-    userData = {};
-    image = {};
-
     constructor(props) {
         super(props);
+        this.username = this.props.user.user.displayName;
+        this.email = this.props.user.user.email;
+        this.phone = this.props.user.user.phoneNumber;
     }
 
-    setUserData = (obj) => {
-
+    setUserData = () => {
+      this.props.setUserData(this.username, this.email, this.phone);
     }
     
     onSetAvatar = (imageUri) => {
@@ -82,189 +85,90 @@ class EditProfile extends React.Component {
         })();
     };
 
-    uploadImage = async (imageUri) => {
-      const blob = await new Promise((resolve, reject) => {
-          const xhr = new XMLHttpRequest();
-          xhr.onload = () => resolve(xhr.response);
-          xhr.onerror = () => reject(new TypeError('Network error'));
-          xhr.responseType = 'blob';
-          xhr.open('GET', imageUri, true);
-          xhr.send(null);
-      });
-
+    uploadImage = async imageUri => {
       const storage = getStorage();
+      const image = await fetch(imageUri);
+      const blob = await image.blob();
       const storageRef = ref(storage, `images/${new Date().toISOString()}`);
+      const snapshot = await uploadBytes(storageRef, blob);
+      const url = await getDownloadURL(snapshot.ref);
 
-      return Promise.resolve(uploadBytes(storageRef, blob).then(snapshot => {
-        console.log(snapshot);
-        return Promise.resolve(getDownloadURL(snapshot.ref)
-        .then(url => {
-            console.log('URL', url);
-            blob.close();
-            return url;
-        }));
-      }).catch(error => {
-        console.log('snap error', error);
-        blob.close();
-        return;
-      }))
-  
-      // snapshot.on(
-      //     storage.TaskEvent.STATE_CHANGED,
-      //     () => { 
-      //         console.log('okok')
-      //     },
-      //     error => {
-      //         console.log('snap error');
-      //         blob.close();
-      //         return;
-      //     },
-      //     () => {
-      //         snapshot.snapshot.ref.getDownloadURL().then(url => {
-      //             console.log('URL', url);
-      //             blob.close();
-      //             return url;
-      //         })
-      //     }
-      // );
+      return url;
     }
 
     render(){
         return (
             <View style={styles.container}>
-              {/* <BottomSheet
-                ref={this.bs}
-                snapPoints={[330, -5]}
-                renderContent={this.renderInner}
-                renderHeader={this.renderHeader}
-                initialSnap={1}
-                callbackNode={this.fall}
-                enabledGestureInteraction={true}
-              /> */}
-                <View style={{alignItems: 'center'}}>
+                <View style={{
+                    alignItems: 'center',
+                    marginBottom: 60
+                  }}>
                   <TouchableOpacity onPress={this.choosePhotoFromLibrary}>
                     <View
                       style={{
-                        height: 100,
-                        width: 100,
-                        borderRadius: 15,
+                        height: 150,
+                        width: 150,
+                        borderRadius: 30,
                         justifyContent: 'center',
                         alignItems: 'center',
                       }}>
                       <ImageBackground
                         source={{
-                          // uri: 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'
-                          uri: this.props.user.photoURL || 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'
+                          uri: this.props.user.user.photoURL || 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'
                         }}
                         style={{
-                          height: 100, 
-                          width: 100
+                          height: 150, 
+                          width: 150
                         }}
-                        imageStyle={{borderRadius: 15}}>
+                        imageStyle={{borderRadius: 30}}>
                         <View
                           style={{
                             flex: 1,
                             justifyContent: 'center',
                             alignItems: 'center',
                           }}>
-                          {/* <MaterialCommunityIcons
-                            name="camera"
-                            size={35}
-                            color="#fff"
-                            style={{
-                              opacity: 0.7,
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              borderWidth: 1,
-                              borderColor: '#fff',
-                              borderRadius: 10,
-                            }}
-                          /> */}
                         </View>
                       </ImageBackground>
                     </View>
                   </TouchableOpacity>
-                  <Text style={{marginTop: 10, fontSize: 18, fontWeight: 'bold'}}>
-                    {this.userData ? this.userData.fname : ''} {this.userData ? this.userData.lname : ''}
-                  </Text>
                 </View>
         
                 <View style={styles.action}>
-                  <FontAwesome name="user-o" color="#333333" size={20} />
+                  <FontAwesome name="user-o" color="#333333" size={25} />
                   <TextInput
-                    placeholder="First Name"
+                    placeholder="Username"
                     placeholderTextColor="#666666"
                     autoCorrect={false}
-                    value={this.userData ? this.userData.fname : ''}
-                    onChangeText={(txt) => setUserData({...this.userData, fname: txt})}
+                    value={this.username}
+                    onChangeText={text => this.username = text}
                     style={styles.textInput}
                   />
                 </View>
                 <View style={styles.action}>
-                  <FontAwesome name="user-o" color="#333333" size={20} />
+                  <FontAwesome name="envelope" color="#333333" size={25} />
                   <TextInput
-                    placeholder="Last Name"
+                    placeholder="Email"
                     placeholderTextColor="#666666"
-                    value={this.userData ? this.userData.lname : ''}
-                    onChangeText={(txt) => setUserData({...this.userData, lname: txt})}
+                    value={this.email}
+                    onChangeText={text => this.email = text}
                     autoCorrect={false}
                     style={styles.textInput}
                   />
                 </View>
                 <View style={styles.action}>
-                  <Ionicons name="ios-clipboard-outline" color="#333333" size={20} />
-                  <TextInput
-                    multiline
-                    numberOfLines={3}
-                    placeholder="About Me"
-                    placeholderTextColor="#666666"
-                    value={this.userData ? this.userData.about : ''}
-                    onChangeText={(txt) => setUserData({...this.userData, about: txt})}
-                    autoCorrect={true}
-                    style={[styles.textInput, {height: 40}]}
-                  />
-                </View>
-                <View style={styles.action}>
-                  <Feather name="phone" color="#333333" size={20} />
+                  <Feather name="phone" color="#333333" size={25} />
                   <TextInput
                     placeholder="Phone"
                     placeholderTextColor="#666666"
                     keyboardType="number-pad"
                     autoCorrect={false}
-                    value={this.userData ? this.userData.phone : ''}
-                    onChangeText={(txt) => setUserData({...this.userData, phone: txt})}
-                    style={styles.textInput}
-                  />
-                </View>
-        
-                <View style={styles.action}>
-                  <FontAwesome name="globe" color="#333333" size={20} />
-                  <TextInput
-                    placeholder="Country"
-                    placeholderTextColor="#666666"
-                    autoCorrect={false}
-                    value={this.userData ? this.userData.country : ''}
-                    onChangeText={(txt) => setUserData({...this.userData, country: txt})}
-                    style={styles.textInput}
-                  />
-                </View>
-                <View style={styles.action}>
-                  <MaterialCommunityIcons
-                    name="map-marker-outline"
-                    color="#333333"
-                    size={20}
-                  />
-                  <TextInput
-                    placeholder="City"
-                    placeholderTextColor="#666666"
-                    autoCorrect={false}
-                    value={this.userData ? this.userData.city : ''}
-                    onChangeText={(txt) => setUserData({...this.userData, city: txt})}
+                    value={this.phone}
+                    onChangeText={text => this.phone = text}
                     style={styles.textInput}
                   />
                 </View>
                 <TouchableOpacity style={styles.buttonContainer}>
-                    <Text style={styles.buttonText}>Update</Text>
+                    <Text style={styles.buttonText} onPress={this.setUserData}>Update</Text>
                 </TouchableOpacity>
             </View>
           );
@@ -352,12 +256,11 @@ const styles = StyleSheet.create({
   },
   textInput: {
     flex: 1,
-    marginTop: -12,
-    paddingLeft: 10,
+    paddingLeft: 20,
     color: '#333333',
   },
   buttonContainer: {
-    marginTop: 10,
+    marginTop: 60,
     width: '100%',
     height: windowHeight / 15,
     backgroundColor: '#2e64e5',

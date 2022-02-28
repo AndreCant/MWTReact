@@ -65,7 +65,7 @@ function ChatStack() {
         <Stack.Screen name="Home" component={Home}/>
         <Stack.Screen name="Chat" component={Chat}/>
         <Stack.Screen name="Profile" component={Profile}/>
-        <Stack.Screen name="EditProfile" component={EditProfile}/>
+        <Stack.Screen name="Edit Profile" component={EditProfile}/>
       </Stack.Navigator>
     );
 }

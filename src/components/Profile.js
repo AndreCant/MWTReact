@@ -63,7 +63,7 @@ class Profile extends React.Component {
                       <TouchableOpacity
                         style={styles.userBtn}
                         onPress={() => {
-                          this.props.navigation.navigate('EditProfile');
+                          this.props.navigation.navigate('Edit Profile');
                         }}>
                         <Text style={styles.userBtnTxt}>Edit</Text>
                       </TouchableOpacity>
