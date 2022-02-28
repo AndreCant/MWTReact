@@ -1,4 +1,4 @@
-import React, {useEffect, useContext, useState} from 'react';
+import React from 'react';
 import {
   View,
   Text,
@@ -18,7 +18,8 @@ import * as ImagePicker from 'expo-image-picker';
 import { windowHeight } from '../constants/Dimension';
 import { connect } from "react-redux";
 import { setAvatar, setUserData } from "../actions/UserActions";
-import { ref, uploadString, getDownloadURL, getStorage, uploadBytes  } from "firebase/storage";
+import { ref, getDownloadURL, getStorage, uploadBytes  } from "firebase/storage";
+import DropdownAlert from 'react-native-dropdownalert';
 const backImage = require("../../assets/logo.png");
 
 const mapStateToProps = (state) => {
@@ -38,17 +39,24 @@ const mapDispatchToProps = (dispatch) => {
     }
 }
 
+
 class EditProfile extends React.Component {
 
     constructor(props) {
         super(props);
+        this.dropDownAlertRef = React.createRef();
         this.username = this.props.user.user.displayName;
         this.email = this.props.user.user.email;
         this.phone = this.props.user.user.phoneNumber;
     }
 
     setUserData = () => {
-      this.props.setUserData(this.username, this.email, this.phone);
+      try {
+        this.props.setUserData(this.username, this.email, this.phone);
+        this.dropDownAlertRef.alertWithType('success', 'Success', 'test');
+      } catch (error) {
+        this.dropDownAlertRef.alertWithType('error', 'Error', error.message);
+      }
     }
     
     onSetAvatar = (imageUri) => {
@@ -139,7 +147,7 @@ class EditProfile extends React.Component {
                     placeholder="Username"
                     placeholderTextColor="#666666"
                     autoCorrect={false}
-                    value={this.username}
+                    value={() => { return this.username }}
                     onChangeText={text => this.username = text}
                     style={styles.textInput}
                   />
@@ -170,6 +178,16 @@ class EditProfile extends React.Component {
                 <TouchableOpacity style={styles.buttonContainer}>
                     <Text style={styles.buttonText} onPress={this.setUserData}>Update</Text>
                 </TouchableOpacity>
+
+                <View>
+                  <DropdownAlert
+                    ref={(ref) => {
+                      if (ref) {
+                        this.dropDownAlertRef = ref;
+                      }
+                    }}
+                  />
+                </View>
             </View>
           );
     }
