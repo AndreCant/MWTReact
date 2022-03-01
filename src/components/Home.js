@@ -12,13 +12,6 @@ export default function Home() {
 
     useEffect(() => {
         navigation.setOptions({
-            headerLeft: () => (
-                <FontAwesome 
-                    name="search" 
-                    size={24} 
-                    color={Color.gray} 
-                    style={{marginLeft: 15}} />
-            ),
             headerRight: () => (
                 <FontAwesome 
                     name="user" 

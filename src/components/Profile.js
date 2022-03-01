@@ -1,6 +1,7 @@
 import React from "react";
 import { Image, StyleSheet, View, SafeAreaView, Text, TouchableOpacity, ScrollView } from "react-native";
 import { connect } from "react-redux";
+import { logout } from "../actions/UserActions";
 import { Constants } from "../constants/Constants"
 
 const mapStateToProps = (state) => {
