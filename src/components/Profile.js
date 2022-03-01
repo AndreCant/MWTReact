@@ -1,8 +1,7 @@
 import React from "react";
-import { Image, StyleSheet, View, SafeAreaView, Text, TextInput, TouchableOpacity, ScrollView } from "react-native";
-import { login } from "../actions/UserActions";
+import { Image, StyleSheet, View, SafeAreaView, Text, TouchableOpacity, ScrollView } from "react-native";
 import { connect } from "react-redux";
-const backImage = require("../../assets/logo.png");
+import { Constants } from "../constants/Constants"
 
 const mapStateToProps = (state) => {
     return {
@@ -12,124 +11,108 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        // login: (email, password) => { 
-        //     dispatch(login(email, password)) 
-        // }
+        signOut: () => { 
+            dispatch(logout())
+        }
     }
 }
 
 class Profile extends React.Component {
 
-    userData = {};
-    route = {};
-    posts = [];
-
     constructor(props) {
         super(props);
     }
 
-    // onLogin = () => {
-    //     this.props.login(this.email, this.password);
-    // }
-
-    render(){
-        return (
-            <SafeAreaView style={{flex: 1, backgroundColor: '#fff'}}>
-              <ScrollView
-                style={styles.container}
-                contentContainerStyle={{justifyContent: 'center', alignItems: 'center'}}
-                showsVerticalScrollIndicator={false}>
-                <Image
-                  style={styles.userImg}
-                  source={{uri: this.userData ? this.userData.userImg || 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg' : 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'}}
-                />
-                <Text style={styles.userName}>{this.userData ? this.userData.fname || 'Test' : 'Test'} {this.userData ? this.userData.lname || 'User' : 'User'}</Text>
-                {/* <Text>{this.route.params ? this.route.params.userId : user.uid}</Text> */}
-                <Text style={styles.aboutUser}>
-                {this.userData ? this.userData.about || 'No details added.' : ''}
-                </Text>
-                <View style={styles.userBtnWrapper}>
-                  {this.route.params ? (
-                    <>
-                      <TouchableOpacity style={styles.userBtn} onPress={() => {}}>
-                        <Text style={styles.userBtnTxt}>Message</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity style={styles.userBtn} onPress={() => {}}>
-                        <Text style={styles.userBtnTxt}>Follow</Text>
-                      </TouchableOpacity>
-                    </>
-                  ) : (
-                    <>
-                      <TouchableOpacity
-                        style={styles.userBtn}
-                        onPress={() => {
-                          this.props.navigation.navigate('Edit Profile');
-                        }}>
-                        <Text style={styles.userBtnTxt}>Edit</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity style={styles.userBtn} onPress={() => logout()}>
-                        <Text style={styles.userBtnTxt}>Logout</Text>
-                      </TouchableOpacity>
-                    </>
-                  )}
-                </View>
-        
-                <View style={styles.userInfoWrapper}>
-                  <View style={styles.userInfoItem}>
-                    <Text style={styles.userInfoTitle}>{this.posts.length}</Text>
-                    <Text style={styles.userInfoSubTitle}>this.posts</Text>
-                  </View>
-                  <View style={styles.userInfoItem}>
-                    <Text style={styles.userInfoTitle}>10,000</Text>
-                    <Text style={styles.userInfoSubTitle}>Followers</Text>
-                  </View>
-                  <View style={styles.userInfoItem}>
-                    <Text style={styles.userInfoTitle}>100</Text>
-                    <Text style={styles.userInfoSubTitle}>Following</Text>
-                  </View>
-                </View>
-        
-                {this.posts.map((item) => (
-                  <PostCard key={item.id} item={item} onDelete={handleDelete} />
-                ))}
-              </ScrollView>
-            </SafeAreaView>
-          );
+    onSignOut = () => {
+      this.props.signOut();
     }
 
+    onEdit = () => {
+      this.props.navigation.navigate(Constants.routes.editProfile);
+    }
+
+    render(){
+      return (
+        <SafeAreaView style={styles.safe}>
+            <Image
+              style={styles.userImg}
+              source={{uri: this.props.user.user.photoURL || Constants.defaultAvatar}}
+            />
+
+            {
+              this.props.user.user.displayName ? 
+              <Text style={styles.userName}>{this.props.user.user.displayName}</Text> :
+              <Text style={styles.userId}>{`User: @${this.props.user.user.uid.substring(0, 16)}`}</Text>
+            }
+
+            <Text style={styles.aboutUser}> {this.props.user.user.email} </Text>
+
+            <View style={styles.userBtnWrapper}>
+                <TouchableOpacity
+                  style={styles.userBtn}
+                  onPress={this.onEdit}>
+                  <Text style={styles.userBtnTxt}>Edit Profile</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.userBtn} onPress={this.onSignOut}>
+                  <Text style={styles.userBtnTxt}>Logout</Text>
+                </TouchableOpacity>
+            </View>
+    
+            <View style={styles.userInfoWrapper}>
+              <View style={styles.userInfoItem}>
+                <Text style={styles.userInfoTitle}>3</Text>
+                <Text style={styles.userInfoSubTitle}>Chats</Text>
+              </View>
+              <View style={styles.userInfoItem}>
+                <Text style={styles.userInfoTitle}>10</Text>
+                <Text style={styles.userInfoSubTitle}>Groups</Text>
+              </View>
+              <View style={styles.userInfoItem}>
+                <Text style={styles.userInfoTitle}>10000</Text>
+                <Text style={styles.userInfoSubTitle}>Messages</Text>
+              </View>
+            </View>
+        </SafeAreaView>
+      );
+    }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Profile);
 
 const styles = StyleSheet.create({
-    container: {
-      flex: 1,
-      backgroundColor: '#fff',
-      padding: 20,
+    safe: {
+      flex: 1, 
+      backgroundColor: '#fff', 
+      alignItems: 'center'
     },
     userImg: {
       height: 150,
       width: 150,
       borderRadius: 75,
+      marginTop: 10,
     },
     userName: {
-      fontSize: 18,
+      fontSize: 35,
       fontWeight: 'bold',
-      marginTop: 10,
-      marginBottom: 10,
+      marginTop: 20,
+      marginBottom: 20,
+    },
+    userId: {
+      fontSize: 20,
+      fontWeight: 'bold',
+      marginTop: 30,
+      marginBottom: 20,
     },
     aboutUser: {
-      fontSize: 12,
-      fontWeight: '600',
-      color: '#666',
+      fontSize: 28,
       textAlign: 'center',
-      marginBottom: 10,
+      marginBottom: 30,
     },
     userBtnWrapper: {
       flexDirection: 'row',
       justifyContent: 'center',
       width: '100%',
-      marginBottom: 10,
+      marginBottom: 30,
     },
     userBtn: {
       borderColor: '#2e64e5',
@@ -158,7 +141,7 @@ const styles = StyleSheet.create({
       textAlign: 'center',
     },
     userInfoSubTitle: {
-      fontSize: 12,
+      fontSize: 20,
       color: '#666',
       textAlign: 'center',
     },

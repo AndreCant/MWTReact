@@ -2,6 +2,7 @@ import React from "react";
 import { Image, StyleSheet, View, SafeAreaView, Text, TextInput, TouchableOpacity } from "react-native";
 import { login } from "../actions/UserActions";
 import { connect } from "react-redux";
+import { Constants } from "../constants/Constants";
 const backImage = require("../../assets/logo.png");
 
 const mapStateToProps = (state) => {
@@ -60,7 +61,7 @@ class Login extends React.Component {
                         </TouchableOpacity>
                         <View style={{marginTop: 20, flexDirection: 'row', alignItems: 'center', alignSelf: 'center'}}>
                             <Text style={{fontWeight: '600', color: 'gray', fontSize: 14}}>Don't have an account? </Text>
-                            <TouchableOpacity onPress={() => this.props.navigation.navigate("Signup")}>
+                            <TouchableOpacity onPress={() => this.props.navigation.navigate(Constants.routes.signup)}>
                                 <Text style={{fontWeight: '600', color: '#3EBDC9', fontSize: 14}}> Sign Up</Text>
                             </TouchableOpacity>
                         </View>

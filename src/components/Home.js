@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
-import { FontAwesome, Entypo } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 import { Color } from '../constants/Color';
 import { useNavigation } from "@react-navigation/native";
-import { Image, StyleSheet, View, TouchableOpacity } from "react-native";
+import { StyleSheet, View } from "react-native";
 import ChatList from './ChatList';
+import { Constants } from '../constants/Constants';
 
 export default function Home() {
 
@@ -24,7 +25,7 @@ export default function Home() {
                     size={35} 
                     color={Color.gray} 
                     style={{marginRight: 20}} 
-                    onPress={() => navigation.navigate("Profile")}/>
+                    onPress={() => navigation.navigate(Constants.routes.profile)}/>
             )
         });
     }, [navigation]);

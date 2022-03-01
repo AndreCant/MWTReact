@@ -10,17 +10,14 @@ import {
   Alert,
 } from 'react-native';
 
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import Feather from 'react-native-vector-icons/Feather';
-import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as ImagePicker from 'expo-image-picker';
 import { windowHeight } from '../constants/Dimension';
 import { connect } from "react-redux";
 import { setAvatar, setUserData } from "../actions/UserActions";
 import { ref, getDownloadURL, getStorage, uploadBytes  } from "firebase/storage";
 import DropdownAlert from 'react-native-dropdownalert';
-const backImage = require("../../assets/logo.png");
+import { Constants } from '../constants/Constants';
 
 const mapStateToProps = (state) => {
     return {
@@ -39,21 +36,24 @@ const mapDispatchToProps = (dispatch) => {
     }
 }
 
-
 class EditProfile extends React.Component {
+
+    state = {
+      username: '',
+      email: '',
+    }
 
     constructor(props) {
         super(props);
         this.dropDownAlertRef = React.createRef();
-        this.username = this.props.user.user.displayName;
-        this.email = this.props.user.user.email;
-        this.phone = this.props.user.user.phoneNumber;
+        this.state.username = this.props.user.user.displayName;
+        this.state.email = this.props.user.user.email;
     }
 
     setUserData = () => {
       try {
-        this.props.setUserData(this.username, this.email, this.phone);
-        this.dropDownAlertRef.alertWithType('success', 'Success', 'test');
+        this.props.setUserData(this.state.username, this.state.email);
+        this.dropDownAlertRef.alertWithType('success', 'Success', Constants.successMsg.updateProfile);
       } catch (error) {
         this.dropDownAlertRef.alertWithType('error', 'Error', error.message);
       }
@@ -63,13 +63,13 @@ class EditProfile extends React.Component {
       this.uploadImage(imageUri).then(url => {
         this.props.setAvatar(url);
       }).catch(error => {
-        Alert.alert("Upload image error", error.message);
+        Alert.alert(Constants.errorMsg.uploadImage, error.message);
       });
     }
     
     choosePhotoFromLibrary = () => {
         (async () => {
-            if (Platform.OS !== 'web') {
+            if (Platform.OS !== Constants.platforms.web) {
                 const { status } = await ImagePicker.getMediaLibraryPermissionsAsync();
     
                 if (status !== 'granted') {
@@ -86,7 +86,7 @@ class EditProfile extends React.Component {
               compressImageQuality: 0.7,
             }).then(image => {
               if (!image.cancelled) {
-                const imageUri = Platform.OS === 'ios' ? image.sourceURL : image.uri;
+                const imageUri = Platform.OS === Constants.platforms.ios ? image.sourceURL : image.uri;
                 this.onSetAvatar(imageUri);
               }
             });
@@ -122,7 +122,7 @@ class EditProfile extends React.Component {
                       }}>
                       <ImageBackground
                         source={{
-                          uri: this.props.user.user.photoURL || 'https://lh5.googleusercontent.com/-b0PKyNuQv5s/AAAAAAAAAAI/AAAAAAAAAAA/AMZuuclxAM4M1SCBGAO7Rp-QP6zgBEUkOQ/s96-c/photo.jpg'
+                          uri: this.props.user.user.photoURL || Constants.defaultAvatar
                         }}
                         style={{
                           height: 150, 
@@ -147,8 +147,9 @@ class EditProfile extends React.Component {
                     placeholder="Username"
                     placeholderTextColor="#666666"
                     autoCorrect={false}
-                    value={() => { return this.username }}
-                    onChangeText={text => this.username = text}
+                    editable={true}
+                    value={this.state.username}
+                    onChangeText={text => this.setState({ username: text })}
                     style={styles.textInput}
                   />
                 </View>
@@ -157,21 +158,9 @@ class EditProfile extends React.Component {
                   <TextInput
                     placeholder="Email"
                     placeholderTextColor="#666666"
-                    value={this.email}
-                    onChangeText={text => this.email = text}
+                    value={this.state.email}
+                    onChangeText={text => this.setState({ email: text })}
                     autoCorrect={false}
-                    style={styles.textInput}
-                  />
-                </View>
-                <View style={styles.action}>
-                  <Feather name="phone" color="#333333" size={25} />
-                  <TextInput
-                    placeholder="Phone"
-                    placeholderTextColor="#666666"
-                    keyboardType="number-pad"
-                    autoCorrect={false}
-                    value={this.phone}
-                    onChangeText={text => this.phone = text}
                     style={styles.textInput}
                   />
                 </View>

@@ -15,6 +15,7 @@ import Profile from "../components/Profile";
 import EditProfile from "../components/EditProfile";
 import { useDispatch, useSelector } from "react-redux";
 import { sUser } from "../reducers/UserReducer";
+import { Constants } from "../constants/Constants";
 
 const Stack = createStackNavigator();
 
@@ -62,10 +63,10 @@ function ChatStack() {
             }
         }}>
 
-        <Stack.Screen name="Home" component={Home}/>
-        <Stack.Screen name="Chat" component={Chat}/>
-        <Stack.Screen name="Profile" component={Profile}/>
-        <Stack.Screen name="Edit Profile" component={EditProfile}/>
+        <Stack.Screen name={Constants.routes.home} component={Home}/>
+        <Stack.Screen name={Constants.routes.chat} component={Chat}/>
+        <Stack.Screen name={Constants.routes.profile} component={Profile}/>
+        <Stack.Screen name={Constants.routes.editProfile} component={EditProfile}/>
       </Stack.Navigator>
     );
 }
@@ -73,8 +74,8 @@ function ChatStack() {
 function AuthStack() {
     return (
       <Stack.Navigator defaultScreenOptions={Login} screenOptions={{headerShown: false}}>
-        <Stack.Screen name="Login" component={Login}/>
-        <Stack.Screen name="Signup" component={Signup}/>
+        <Stack.Screen name={Constants.routes.login} component={Login}/>
+        <Stack.Screen name={Constants.routes.signup} component={Signup}/>
       </Stack.Navigator>
     );
 }

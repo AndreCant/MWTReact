@@ -1,11 +1,10 @@
-import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateEmail, updateProfile, signOut } from "firebase/auth";
 import { Alert } from "react-native";
 import { auth } from "../config/Firebase";
 
 export const UserActions = {
     SET_USER: "SET_USER",
     SET_IMAGE: "SET_IMAGE",
-    SET_DATA: "SET_DATA"
 }
 
 export function login(email, password) {
@@ -39,12 +38,13 @@ export function setAvatar(url){
     }
 }
 
-export function setUserData(username, email, phone){
-    updateProfile(auth.currentUser, { displayName: username, email: email, phoneNumber: phone });
+export function setUserData(username, email){
+    if(username) updateProfile(auth.currentUser, { displayName: username });
+    if(email) updateEmail(auth.currentUser, email);
 
     return {
-        type: UserActions.SET_DATA,
-        payload: {username, email, phone}
+        type: UserActions.SET_USER,
+        payload: auth.currentUser
     }
 }
 
@@ -52,6 +52,15 @@ export function setUser(user){
     return {
         type: UserActions.SET_USER,
         payload: user
+    }
+}
+
+export function logout(){
+    signOut(auth).catch(error => console.error(error));
+
+    return {
+        type: UserActions.SET_USER,
+        payload: null
     }
 }
 

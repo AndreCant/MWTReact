@@ -3,13 +3,14 @@ import { StyleSheet, TouchableOpacity } from 'react-native';
 import { FontAwesome, Entypo } from '@expo/vector-icons';
 import { Color } from '../constants/Color';
 import { useNavigation } from '@react-navigation/native';
+import { Constants } from '../constants/Constants';
 
 export default function ChatList() {
 
     const navigation = useNavigation();
 
     return (
-        <TouchableOpacity style={styles.chatButton} onPress={() => navigation.navigate("Chat")}>
+        <TouchableOpacity style={styles.chatButton} onPress={() => navigation.navigate(Constants.routes.chat)}>
             <Entypo name="chat" size={24} color={Color.lightGray} />
         </TouchableOpacity>
     );
