@@ -1,7 +1,7 @@
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateEmail, updateProfile, signOut } from "firebase/auth";
 import { Alert } from "react-native";
 import { auth } from "../config/Firebase";
-import { getUsersByFilter, insertUser, updateUser } from "../service/UserService";
+import { insertUser, updateUser } from "../service/UserService";
 
 export const UserActions = {
     SET_USER: "SET_USER",
@@ -71,11 +71,4 @@ export function logout(){
         payload: null
     }
 }
-
-// export function searchUsers(filter){
-//     return {
-//         type: UserActions.GET_USERS_FILTER,
-//         payload: getUsersByFilter
-//     }
-// }
 
