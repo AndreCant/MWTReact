@@ -6,95 +6,124 @@ import { useNavigation } from '@react-navigation/native';
 import { Constants } from '../constants/Constants';
 import SearchDropDown from './SearchDropDown';
 import { getUsersByFilter } from '../service/UserService';
+import { connect } from 'react-redux';
 
-export default function ChatList() {
+const mapStateToProps = (state) => {
+  return {
+      user: state.user
+  }
+}
 
-    const navigation = useNavigation();
-    const [keyword, setKeyword] = useState('');
-    const [selectedType, setSelectedType] = useState(0);
-    const [data, setData] = useState([]);
-    const [searching, setSearching] = useState(false);
-    const [filtered, setFiltered] = useState([]);
+const mapDispatchToProps = (dispatch) => {
+  return {
+      // signOut: () => { 
+      //     dispatch(logout())
+      // }
+  }
+}
+class ChatList extends React.Component {
 
-    const onKeywordChanged = (keyword) => {
-        setKeyword(() => keyword);
-    };
+    constructor(props){
+      super(props);
 
-    const updateSelectedType = (selectedType) => () => {
-        setSelectedType(() => selectedType);
-    };
+      this.state = {
+        searching: false,
+        filtered: []
+      }
+    }
 
-    const onSearch = (text) => {
+    // const navigation = useNavigation();
+    // const [keyword, setKeyword] = useState('');
+    // const [selectedType, setSelectedType] = useState(0);
+    // const [data, setData] = useState([]);
+    // const [searching, setSearching] = useState(false);
+    // const [filtered, setFiltered] = useState([]);
+
+    // const onKeywordChanged = (keyword) => {
+    //     setKeyword(() => keyword);
+    // };
+
+    // const updateSelectedType = (selectedType) => () => {
+    //     setSelectedType(() => selectedType);
+    // };
+
+    onSearch = (text) => {
         if (text) {
-          setSearching(true)
-          const temp = text.toLowerCase()
+          this.setState({searching: true});
     
           getUsersByFilter(text).then(users => {
-            setFiltered(users);
+            this.setState({filtered: users});
           });
 
         }
         else {
-          setSearching(false);
-          setFiltered([]);
+          this.setState({searching: false});
+          this.setState({filtered: []});
         }
     }
 
-    const renderItems = ({ item }) => {
-        return (
-          <TouchableOpacity style={styles.listItem} onPress={selectItem(item)}>
-            <Image
-              style={styles.listItemImage}
-              source={{
-                uri: item.avatar ? item.avatar : item.icon
-              }}
-            />
-            <Text style={styles.listItemLabel}>{item.name}</Text>
-          </TouchableOpacity>
-        );
-      }
+    // const onChat = user => {
+    //   navigation.navigate
+    // }  
 
-    return (
-        <View style={styles.container}>
-            {/* <TouchableOpacity style={styles.chatButton} onPress={() => navigation.navigate(Constants.routes.chat)}>
-                <Entypo name="chat" size={24} color={Color.lightGray} />
-            </TouchableOpacity> */}
+    // const renderItems = ({ user }) => {
+    //     return (
+    //       <TouchableOpacity style={styles.listItem} onPress={onChat(user)}>
+    //         <Image
+    //           style={styles.listItemImage}
+    //           source={{
+    //             uri: user.avatar | Constants.defaultAvatar
+    //           }}
+    //         />
+    //         <Text style={styles.listItemLabel}>{user.username}</Text>
+    //       </TouchableOpacity>
+    //     );
+    // }
 
-            <View style={styles.inputContainer}>
-                <View style={styles.searchSection}>
-                    <FontAwesome 
-                        name="search" 
-                        size={20} 
-                        color={Color.gray} 
-                        style={{padding: 10}} />
-                    <TextInput
-                        autoCapitalize='none'
-                        // onChangeText={onKeywordChanged}
-                        selectionColor={Color.primary}
-                        onChangeText={onSearch}
-                        placeholder="Search..."
-                        placeholderTextColor="#000"
-                        style={styles.input}
-                    />
-                </View>
-            </View>
-            <View style={styles.list}>
-                <FlatList
-                    data={data}
-                    renderItem={renderItems}
-                    keyExtractor={(item, index) => getKey(item)}
-                />
-            </View>
-
-            {
-                searching &&
-                <SearchDropDown
-                    onPress={() => setSearching(false)}
-                    dataSource={filtered} />
-            }
-        </View>
-    );
+    render(){
+      return (
+          <View style={styles.container}>
+              {/* <TouchableOpacity style={styles.chatButton} onPress={() => navigation.navigate(Constants.routes.chat)}>
+                  <Entypo name="chat" size={24} color={Color.lightGray} />
+              </TouchableOpacity> */}
+  
+              <View style={styles.inputContainer}>
+                  <View style={styles.searchSection}>
+                      <FontAwesome 
+                          name="search" 
+                          size={20} 
+                          color={Color.gray} 
+                          style={{padding: 10}} />
+                      <TextInput
+                          autoCapitalize='none'
+                          selectionColor={Color.primary}
+                          onChangeText={text => this.onSearch(text)}
+                          placeholder="Search..."
+                          placeholderTextColor="#000"
+                          style={styles.input}
+                      />
+                  </View>
+              </View>
+              <View style={styles.list}>
+                  {/* <FlatList
+                      data={data}
+                      renderItem={renderItems}
+                      keyExtractor={(item, index) => getKey(item)}
+                  /> */}
+              </View>
+  
+              {
+                  this.state.searching &&
+                  <SearchDropDown
+                      onPress={() => this.setState({searching: false})}
+                      dataSource={this.state.filtered} />
+              }
+          </View>
+      );
+    }
 }
+
+export default connect(mapStateToProps, mapDispatchToProps)(ChatList);
 
 const styles = StyleSheet.create({
     chatButton: {
