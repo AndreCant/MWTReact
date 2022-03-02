@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import React from 'react';
 import {
     TouchableOpacity,
@@ -6,9 +7,13 @@ import {
     Text
 } from 'react-native';
 import { Color } from '../constants/Color';
+import { Constants } from '../constants/Constants';
 
 export default function SearchDropDown(props) {
+    const navigation = useNavigation();
+
     const { dataSource } = props
+
     return (
         <TouchableOpacity
             onPress={props.onPress}
@@ -18,10 +23,15 @@ export default function SearchDropDown(props) {
                 {
                     dataSource.length ?
 
-                        dataSource.map(item => {
+                        dataSource.map(user => {
                             return (
-                                <View style={styles.itemView}>
-                                    <Text style={styles.itemText}>{item.username}</Text>
+                                <View style={styles.itemView}
+                                      >        
+                                    <Text style={styles.itemText}
+                                          onPress={() => navigation.navigate(Constants.routes.chat, {
+                                            userChat: user
+                                          }
+                                    )}>{user.username}</Text>
                                 </View>
                             )
                         })

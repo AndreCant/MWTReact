@@ -47,7 +47,7 @@ class ChatList extends React.Component {
     //     setSelectedType(() => selectedType);
     // };
 
-    onSearch = (text) => {
+    onSearch = text => {
         if (text) {
           this.setState({searching: true});
     
@@ -62,8 +62,10 @@ class ChatList extends React.Component {
         }
     }
 
-    // const onChat = user => {
-    //   navigation.navigate
+    // onChat = user => {
+    //   this.props.navigation.navigate(Constants.routes.chat, {
+    //     userChat: user
+    //   });
     // }  
 
     // const renderItems = ({ user }) => {
@@ -116,7 +118,7 @@ class ChatList extends React.Component {
                   this.state.searching &&
                   <SearchDropDown
                       onPress={() => this.setState({searching: false})}
-                      dataSource={this.state.filtered} />
+                      dataSource={this.state.filtered}/>
               }
           </View>
       );
