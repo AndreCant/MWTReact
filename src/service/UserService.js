@@ -4,7 +4,7 @@ import { auth, database } from "../config/Firebase";
 const collectionRef = collection(database, 'users');
 
 export async function getUsersByFilter(filter) {
-    const qry = query(collectionRef, orderBy('username'), startAt(filter), limit(10));
+    const qry = query(collectionRef, where('username', '!=', auth.currentUser.displayName),  orderBy('username'), startAt(filter), limit(10));
     const usersDoc = await getDocs(qry);
     const users = [];
 
@@ -21,6 +21,7 @@ export async function getUsersByFilter(filter) {
 
 export function insertUser(user){
     addDoc(collectionRef, {
+        _id: user.email,
         userRefId: user.uid,
         username: user.displayName,
         avatar: user.photoURL

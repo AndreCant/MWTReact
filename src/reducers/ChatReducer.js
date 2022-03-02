@@ -3,7 +3,7 @@ import { initialChatState } from "../state/AppState";
 
 export default function ChatReducer(state = initialChatState, action){
     switch (action.type) {
-        case ChatActions.GET_MESSAGES:
+        case ChatActions.SET_MESSAGES:
             return {
                 ...state,
                 messages: action.payload

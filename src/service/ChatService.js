@@ -4,10 +4,13 @@ import { database } from "../config/Firebase";
 const collectionRef = collection(database, 'chats');
 
 export async function getMessages(user_1, user_2) {
+    console.log(user_1, user_2)
     const qry = query(collectionRef, 
-        where('user_1', 'in', [user_1.userRefId, user_2.userRefId]), 
-        where('user_2', 'in', [user_1.userRefId, user_2.userRefId]), 
-        orderBy('createdAt', 'desc'));
+        where('sender', '==', user_1), 
+        where('users', 'array-contains', user_1), 
+        where('users', 'in', [user_2]), 
+        // orderBy('createdAt', 'desc')
+        );
 
     const messagesDoc = await getDocs(qry);
     const messages = [];
@@ -17,10 +20,12 @@ export async function getMessages(user_1, user_2) {
             _id: doc.id,
             createdAt: doc.data().createdAt.toDate(),
             text: doc.data().text,
-            user_1: doc.data().user_1,
-            user_2: doc.data().user_2,
+            user: doc.data().user,
+            users: doc.data().users,
+            sender: doc.data().sender
         });
     });
 
+    console.log(messages);
     return messages;
 }
