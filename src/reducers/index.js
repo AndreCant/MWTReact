@@ -6,8 +6,7 @@ import UserReducer from "./UserReducer";
 
 const userPersistConfig = {
     key: 'user',
-    storage: AsyncStorage,
-    whitelist: ['items']
+    storage: AsyncStorage
 }
   
 const chatPersistConfig = {
@@ -16,8 +15,10 @@ const chatPersistConfig = {
 }
   
 const rootReducer = combineReducers({
-    user: persistReducer(userPersistConfig, UserReducer),
-    chat: persistReducer(chatPersistConfig, ChatReducer)
+    // user: persistReducer(userPersistConfig, UserReducer),
+    // chat: persistReducer(chatPersistConfig, ChatReducer)
+    user: UserReducer,
+    chat: ChatReducer
 });
 
 export default rootReducer;
