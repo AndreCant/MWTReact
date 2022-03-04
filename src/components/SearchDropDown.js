@@ -25,13 +25,14 @@ export default function SearchDropDown(props) {
 
                         dataSource.map(user => {
                             return (
-                                <View style={styles.itemView}
+                                <View style={styles.itemView} key={user.userRefId}
                                       >        
                                     <Text style={styles.itemText}
-                                          onPress={() => navigation.navigate(Constants.routes.chat, {
-                                            userChat: user
-                                          }
-                                    )}>{user.username}</Text>
+                                          onPress={() => {
+                                            navigation.navigate(Constants.routes.chat, { userChat: user });
+                                            props.onPress()
+                                           }}
+                                    >{user.username}</Text>
                                 </View>
                             )
                         })
@@ -39,7 +40,7 @@ export default function SearchDropDown(props) {
                         :
                         <View
                             style={styles.noResultView}>
-                            <Text style={styles.noResultText}>No users or groups matched...</Text>
+                            <Text style={styles.noResultText}>No users matched...</Text>
                         </View>
                 }
 
@@ -51,8 +52,10 @@ export default function SearchDropDown(props) {
 
 const styles = StyleSheet.create({
     container: {
-        marginTop: 5,
+        marginTop: 50,
         marginLeft: 18,
+        position: 'absolute',
+        width: '100%',
     },
     subContainer: {
         backgroundColor: Color.primary,

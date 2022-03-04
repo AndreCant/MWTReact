@@ -40,12 +40,7 @@ class Profile extends React.Component {
               source={{uri: this.props.user.user.photoURL || Constants.defaultAvatar}}
             />
 
-            {
-              this.props.user.user.displayName ? 
-              <Text style={styles.userName}>{this.props.user.user.displayName}</Text> :
-              <Text style={styles.userId}>{`User: @${this.props.user.user.uid.substring(0, 16)}`}</Text>
-            }
-
+            <Text style={styles.userName}>{this.props.user.user.displayName}</Text> 
             <Text style={styles.aboutUser}> {this.props.user.user.email} </Text>
 
             <View style={styles.userBtnWrapper}>

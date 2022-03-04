@@ -29,7 +29,8 @@ class ChatList extends React.Component {
       super(props);
       this.state = {
         searching: false,
-        filtered: []
+        filtered: [],
+        inputText: ''
       }
     }
 
@@ -43,7 +44,7 @@ class ChatList extends React.Component {
 
     onSearch = text => {
         if (text) {
-          this.setState({searching: true});
+          this.setState({searching: true, inputText: text});
     
           getUsersByFilter(text).then(users => {
             this.setState({filtered: users});
@@ -51,8 +52,7 @@ class ChatList extends React.Component {
 
         }
         else {
-          this.setState({searching: false});
-          this.setState({filtered: []});
+          this.setState({searching: false, filtered: [], inputText: ''});
         }
     }
 
@@ -91,6 +91,7 @@ class ChatList extends React.Component {
                           placeholder="Search..."
                           placeholderTextColor="#000"
                           style={styles.input}
+                          value={this.state.inputText}
                       />
                   </View>
               </View>
@@ -103,7 +104,7 @@ class ChatList extends React.Component {
               {
                   this.state.searching &&
                   <SearchDropDown
-                      onPress={() => this.setState({searching: false})}
+                      onPress={() => this.setState({searching: false, filtered: [], inputText: ''})}
                       dataSource={this.state.filtered}/>
               }
           </View>
