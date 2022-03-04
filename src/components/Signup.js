@@ -46,7 +46,6 @@ class Signup extends React.Component {
                             autoCapitalize="none"
                             keyboardType="email-address"
                             textContentType="emailAddress"
-                            autoFocus={true}
                             value={this.email}
                             onChangeText={text => this.email = text}
                         />
