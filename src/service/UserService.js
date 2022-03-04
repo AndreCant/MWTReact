@@ -1,3 +1,4 @@
+import { async } from "@firebase/util";
 import { addDoc, collection, doc, endAt, getDoc, getDocs, limit, onSnapshot, orderBy, query, startAt, updateDoc, where } from "firebase/firestore";
 import { auth, database } from "../config/Firebase";
 
@@ -48,4 +49,20 @@ export async function updateUser(user){
             });
         }
     }
+}
+
+export async function getUsersByRefIds(ids){
+    const qry = query(collectionRef, where('userRefId', 'in', ids));
+    const usersDoc = await getDocs(qry);
+    const users = [];
+
+    usersDoc.forEach(doc => {
+        users.push({
+            userRefId: doc.data().userRefId,
+            username: doc.data().username,
+            avatar: doc.data().avatar
+        });
+    });
+    
+    return users;
 }

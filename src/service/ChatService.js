@@ -1,5 +1,6 @@
 import { addDoc, collection, getDocs, orderBy, query, where } from "firebase/firestore";
 import { database } from "../config/Firebase";
+import { getUsersByRefIds } from "./UserService";
 
 const collectionRef = collection(database, 'chats');
 
@@ -38,4 +39,28 @@ export async function insertMessage(message, users){
         user,
         users
     });
+}
+
+export async function getChatsUsers(user) {
+    const qry1 = query(collectionRef, 
+        where('users', 'array-contains', user),
+        orderBy('createdAt', 'desc')
+    );
+
+    const chatsDoc = await getDocs(qry1);
+    const chatUsers = new Set();
+
+    chatsDoc.forEach(doc => {
+        if (chatUsers.size <= 10) {
+            doc.data().users.forEach(usr => {
+                chatUsers.add(usr);
+            });
+        }else{
+            return;
+        }
+    });
+
+    chatUsers.delete(user);
+
+    return await getUsersByRefIds(Array.from(chatUsers));
 }

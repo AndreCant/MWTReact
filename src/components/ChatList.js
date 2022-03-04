@@ -2,50 +2,44 @@ import React, { useEffect, useState } from 'react';
 import { FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { FontAwesome, Entypo } from '@expo/vector-icons';
 import { Color } from '../constants/Color';
-import { useNavigation } from '@react-navigation/native';
 import { Constants } from '../constants/Constants';
 import SearchDropDown from './SearchDropDown';
 import { getUsersByFilter } from '../service/UserService';
 import { connect } from 'react-redux';
+import { getChatUsers } from '../actions/ChatActions';
 
 const mapStateToProps = (state) => {
   return {
-      user: state.user
+      user: state.user,
+      chat: state.chat
   }
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-      // signOut: () => { 
-      //     dispatch(logout())
-      // }
+      getChatUsers: (user) => { 
+          dispatch(getChatUsers(user))
+      }
   }
 }
+
 class ChatList extends React.Component {
 
     constructor(props){
       super(props);
-
       this.state = {
         searching: false,
         filtered: []
       }
     }
 
-    // const navigation = useNavigation();
-    // const [keyword, setKeyword] = useState('');
-    // const [selectedType, setSelectedType] = useState(0);
-    // const [data, setData] = useState([]);
-    // const [searching, setSearching] = useState(false);
-    // const [filtered, setFiltered] = useState([]);
+    componentDidMount(){
+      this.getChats();
+    }
 
-    // const onKeywordChanged = (keyword) => {
-    //     setKeyword(() => keyword);
-    // };
-
-    // const updateSelectedType = (selectedType) => () => {
-    //     setSelectedType(() => selectedType);
-    // };
+    getChats = () => {
+      this.props.getChatUsers(this.props.user.user.uid);
+    }
 
     onSearch = text => {
         if (text) {
@@ -62,33 +56,27 @@ class ChatList extends React.Component {
         }
     }
 
-    // onChat = user => {
-    //   this.props.navigation.navigate(Constants.routes.chat, {
-    //     userChat: user
-    //   });
-    // }  
+    onChat = user => {
+      this.props.onChat(user);
+    }  
 
-    // const renderItems = ({ user }) => {
-    //     return (
-    //       <TouchableOpacity style={styles.listItem} onPress={onChat(user)}>
-    //         <Image
-    //           style={styles.listItemImage}
-    //           source={{
-    //             uri: user.avatar | Constants.defaultAvatar
-    //           }}
-    //         />
-    //         <Text style={styles.listItemLabel}>{user.username}</Text>
-    //       </TouchableOpacity>
-    //     );
-    // }
+    renderItems = ({ item }) => {
+        return (
+          <TouchableOpacity style={styles.listItem} onPress={() => this.onChat(item)}>
+            <Image
+              style={styles.listItemImage}
+              source={{
+                uri: item.avatar || Constants.defaultAvatar
+              }}
+            />
+            <Text style={styles.listItemLabel}>{item.username}</Text>
+          </TouchableOpacity>
+        );
+    }
 
     render(){
       return (
           <View style={styles.container}>
-              {/* <TouchableOpacity style={styles.chatButton} onPress={() => navigation.navigate(Constants.routes.chat)}>
-                  <Entypo name="chat" size={24} color={Color.lightGray} />
-              </TouchableOpacity> */}
-  
               <View style={styles.inputContainer}>
                   <View style={styles.searchSection}>
                       <FontAwesome 
@@ -106,13 +94,11 @@ class ChatList extends React.Component {
                       />
                   </View>
               </View>
-              <View style={styles.list}>
-                  {/* <FlatList
-                      data={data}
-                      renderItem={renderItems}
-                      keyExtractor={(item, index) => getKey(item)}
-                  /> */}
-              </View>
+              <FlatList
+                  data={this.props.chat.chatUsers}
+                  renderItem={this.renderItems}
+                  keyExtractor={(item, index) => item}
+              />
   
               {
                   this.state.searching &&
@@ -201,24 +187,23 @@ const styles = StyleSheet.create({
       searchActionLabelActive: {
         color: '#fff',
       },
-      list: {
-        flex: 1,
-      },
       listItem: {
         flex: 1,
         flexDirection: 'row',
         marginHorizontal: 8,
         paddingVertical: 12,
         alignItems: 'center',
-        borderBottomWidth: 1,
+        borderBottomWidth: 2,
         borderBottomColor: '#ccc'
       },
       listItemImage: {
-        width: 32,
-        height: 32,
-        marginRight: 8
+        width: 50,
+        height: 50,
+        marginRight: 25,
+        marginLeft: 10,
+        borderRadius: 50
       },
       listItemLabel: {
-        fontSize: 16,
+        fontSize: 20,
       }
 });

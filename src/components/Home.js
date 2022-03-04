@@ -25,7 +25,7 @@ export default function Home() {
 
     return (
         <View style={StyleSheet.container}>
-            <ChatList />
+            <ChatList onChat={(user) => navigation.navigate(Constants.routes.chat, { userChat: user, title: user.username })}/>
         </View>
     );
 }

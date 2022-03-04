@@ -3,5 +3,6 @@ export const initialUserState = {
 }
 
 export const initialChatState = {
+    chatUsers: [],
     messages: []
 }

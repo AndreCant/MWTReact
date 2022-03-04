@@ -26,8 +26,13 @@ const mapDispatchToProps = (dispatch) => {
 
 class Chat extends React.Component {
 
+    static navigationOptions = {
+        title: 'Chat'
+    };
+
     constructor(props){
         super(props);
+        Chat.navigationOptions.title = this.props.route.params.userChat.username;
         this.loadMessages();
     }
 

@@ -2,6 +2,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateEmail
 import { Alert } from "react-native";
 import { auth } from "../config/Firebase";
 import { insertUser, updateUser } from "../service/UserService";
+import { setChats, setChatUsers } from "./ChatActions";
 
 export const UserActions = {
     SET_USER: "SET_USER",
@@ -64,11 +65,12 @@ export function setUser(user){
 }
 
 export function logout(){
-    signOut(auth).catch(error => console.error(error));
-
-    return {
-        type: UserActions.SET_USER,
-        payload: null
+    return (dispatch, getState) => {
+        signOut(auth).catch(error => console.error(error));
+    
+        dispatch(setUser(null));
+        dispatch(setChats([]));
+        dispatch(setChatUsers([]));
     }
 }
 

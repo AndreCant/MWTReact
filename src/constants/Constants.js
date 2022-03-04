@@ -7,6 +7,7 @@ export const Constants =  {
         editProfile: 'Edit Profile',
         login: 'Login',
         signup: 'Signup',
+        chatList: 'Chat List'
     },
     successMsg: {
         updateProfile: 'Profile updated successfully!'
