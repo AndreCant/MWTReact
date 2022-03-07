@@ -1,7 +1,7 @@
 import React from "react";
 import { GiftedChat } from "react-native-gifted-chat";
 import { connect } from "react-redux";
-import { getChats, sendMessage } from "../actions/ChatActions";
+import { clearChat, getChats, getChatUsers, sendMessage } from "../actions/ChatActions";
 import { sChat } from "../reducers/ChatReducer";
 import { sUser } from "../reducers/UserReducer";
 import { Constants } from '../constants/Constants';
@@ -20,20 +20,26 @@ const mapDispatchToProps = (dispatch) => {
         },
         sendMessage: (message, users) => {
             dispatch(sendMessage(message, users));
+        },
+        clearMessages: () => {
+            dispatch(clearChat())
+        },
+        getChatUsers: (user) => { 
+            dispatch(getChatUsers(user))
         }
     }
 }
 
 class Chat extends React.Component {
 
-    static navigationOptions = {
-        title: 'Chat'
-    };
-
     constructor(props){
         super(props);
-        Chat.navigationOptions.title = this.props.route.params.userChat.username;
         this.loadMessages();
+    }
+
+    componentWillUnmount(){
+        this.props.getChatUsers(this.props.user.user.uid);
+        this.props.clearMessages();
     }
 
     loadMessages = () => {
@@ -59,6 +65,8 @@ class Chat extends React.Component {
                     backgroundColor: '#fff'
                 }}
                 showAvatarForEveryMessage={true}
+                timeFormat="HH:m"
+                dateFormat="D MMMM YYYY"
             />
         );
     }

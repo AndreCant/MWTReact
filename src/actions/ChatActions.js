@@ -58,3 +58,7 @@ export function getChatUsers(user){
         });
     }
 }
+
+export function clearChat(){
+    return (dispatch, getState) => dispatch(setChats([]));
+}

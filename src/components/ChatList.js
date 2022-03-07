@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { FlatList, Image, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
-import { FontAwesome, Entypo } from '@expo/vector-icons';
+import { FontAwesome } from '@expo/vector-icons';
 import { Color } from '../constants/Color';
 import { Constants } from '../constants/Constants';
 import SearchDropDown from './SearchDropDown';
@@ -33,7 +33,7 @@ class ChatList extends React.Component {
         inputText: ''
       }
     }
-
+    
     componentDidMount(){
       this.getChats();
     }
@@ -60,18 +60,42 @@ class ChatList extends React.Component {
       this.props.onChat(user);
     }  
 
-    renderItems = ({ item }) => {
-        return (
-          <TouchableOpacity style={styles.listItem} onPress={() => this.onChat(item)}>
-            <Image
-              style={styles.listItemImage}
-              source={{
-                uri: item.avatar || Constants.defaultAvatar
-              }}
-            />
-            <Text style={styles.listItemLabel}>{item.username}</Text>
-          </TouchableOpacity>
-        );
+    getDateToShow = timestamp => {
+      const date = new Date(timestamp);
+        const today = new Date();
+        let dateToShow;
+
+        // Is same day
+        if (date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth() && date.getDate() === today.getDate()) { 
+          dateToShow = `${date.getHours()}:${date.getMinutes()}`;
+        }else{
+          // Is yestarday
+          const yesterday = new Date();
+          yesterday.setDate(today.getDate()-1);
+
+          if (yesterday.toDateString() === date.toDateString()) dateToShow = 'Yesterday';
+        }
+
+        if (!dateToShow) dateToShow = `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`;
+
+        return dateToShow;
+    }
+
+    renderItems = ({ item, index }) => {
+      const date = this.getDateToShow(item.createdAt);
+
+      return (
+        <TouchableOpacity style={styles.listItem} key={index} onPress={() => this.onChat(item)}>
+          <Image
+            style={styles.listItemImage}
+            source={{
+              uri: item.avatar || Constants.defaultAvatar
+            }}
+          />
+          <Text style={styles.listItemLabel}>{item.username}</Text>
+          <Text style={styles.listItemDate}>{date}</Text>
+        </TouchableOpacity>
+      );
     }
 
     render(){
@@ -96,11 +120,11 @@ class ChatList extends React.Component {
                   </View>
               </View>
               <FlatList
+                  style={styles.flatList}
                   data={this.props.chat.chatUsers}
                   renderItem={this.renderItems}
-                  keyExtractor={(item, index) => item}
+                  keyExtractor={(item, index) => String(index)}
               />
-  
               {
                   this.state.searching &&
                   <SearchDropDown
@@ -115,24 +139,6 @@ class ChatList extends React.Component {
 export default connect(mapStateToProps, mapDispatchToProps)(ChatList);
 
 const styles = StyleSheet.create({
-    chatButton: {
-        backgroundColor: Color.primary,
-        height: 50,
-        width: 50,
-        borderRadius: 25,
-        alignItems: 'center',
-        justifyContent: 'center',
-        shadowColor: Color.primary,
-        shadowOffset: {
-            width: 0,
-            height: 0
-        },
-        shadowOpacity: .9,
-        shadowRadius: 8,
-        marginRight: 20,
-        marginBottom: 50
-    },
-    /******** */
     container: {
         backgroundColor: '#fff'
       },
@@ -206,5 +212,13 @@ const styles = StyleSheet.create({
       },
       listItemLabel: {
         fontSize: 20,
+      },
+      listItemDate: {
+        fontSize: 15,
+        marginLeft: 'auto',
+        marginRight: 10
+      },
+      flatList: {
+        height: '100%'
       }
 });

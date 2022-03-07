@@ -48,19 +48,22 @@ export async function getChatsUsers(user) {
     );
 
     const chatsDoc = await getDocs(qry1);
-    const chatUsers = new Set();
+    const chatUsers = {};
 
     chatsDoc.forEach(doc => {
-        if (chatUsers.size <= 10) {
-            doc.data().users.forEach(usr => {
-                chatUsers.add(usr);
+        const keys = Object.keys(chatUsers);
+
+        if (keys.length < 10) {
+            doc.data().users.forEach(userId => {
+                if (userId != user && !keys.includes(userId)) {
+                    chatUsers[userId] = { createdAt: doc.data().createdAt }
+                    return;
+                }
             });
         }else{
             return;
         }
     });
 
-    chatUsers.delete(user);
-
-    return await getUsersByRefIds(Array.from(chatUsers));
+    return await getUsersByRefIds(chatUsers);
 }

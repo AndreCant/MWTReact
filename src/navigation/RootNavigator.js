@@ -16,7 +16,6 @@ import EditProfile from "../components/EditProfile";
 import { useDispatch, useSelector } from "react-redux";
 import { sUser } from "../reducers/UserReducer";
 import { Constants } from "../constants/Constants";
-import ChatList from "../components/ChatList";
 
 const Stack = createStackNavigator();
 
@@ -64,8 +63,8 @@ function ChatStack() {
             }
         }}>
 
-        <Stack.Screen name={Constants.routes.home} component={Home}/>
-        <Stack.Screen name={Constants.routes.chat} component={Chat} options={Chat.navigationOptions}/>
+        <Stack.Screen name={Constants.routes.home} component={Home} options={{title: 'MWT Chat'}}/>
+        <Stack.Screen name={Constants.routes.chat} component={Chat} options={({ route }) => ({ title: route.params.userChat.username })}/>
         <Stack.Screen name={Constants.routes.profile} component={Profile}/>
         <Stack.Screen name={Constants.routes.editProfile} component={EditProfile}/>
       </Stack.Navigator>

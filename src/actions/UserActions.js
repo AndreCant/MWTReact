@@ -36,7 +36,7 @@ export function signup(email, password) {
 
 export function setAvatar(url){
     updateProfile(auth.currentUser, { photoURL: url });
-    updateUser(auth.currentUser);
+    updateUser({...auth.currentUser, photoURL: url});
 
     return {
         type: UserActions.SET_IMAGE,
@@ -45,15 +45,22 @@ export function setAvatar(url){
 }
 
 export function setUserData(username, email){
+    const payload = {...auth.currentUser};
+
     if(username) {
         updateProfile(auth.currentUser, { displayName: username });
-        updateUser(auth.currentUser);
+        updateUser(payload);
+        payload.displayName = username;
     }
-    if(email) updateEmail(auth.currentUser, email);
+
+    if(email) {
+        updateEmail(auth.currentUser, email);
+        payload.email = email;
+    }
 
     return {
         type: UserActions.SET_USER,
-        payload: auth.currentUser
+        payload: payload
     }
 }
 

@@ -1,4 +1,4 @@
-import React, {useState, createContext} from "react";
+import React from "react";
 import RootNavigator from "./src/navigation/RootNavigator";
 import createStore from "./src/store";
 import { Provider } from "react-redux";

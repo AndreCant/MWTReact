@@ -14,6 +14,11 @@ export default function SearchDropDown(props) {
 
     const { dataSource } = props
 
+    const onChat = user => {
+        navigation.navigate(Constants.routes.chat, { userChat: user });
+        props.onPress();
+    }
+
     return (
         <TouchableOpacity
             onPress={props.onPress}
@@ -25,14 +30,10 @@ export default function SearchDropDown(props) {
 
                         dataSource.map(user => {
                             return (
-                                <View style={styles.itemView} key={user.userRefId}
-                                      >        
-                                    <Text style={styles.itemText}
-                                          onPress={() => {
-                                            navigation.navigate(Constants.routes.chat, { userChat: user });
-                                            props.onPress()
-                                           }}
-                                    >{user.username}</Text>
+                                <View style={styles.itemView} key={user.userRefId}>        
+                                    <TouchableOpacity onPress={() => onChat(user)} >
+                                        <Text style={styles.itemText}> {user.username} </Text>
+                                    </TouchableOpacity>
                                 </View>
                             )
                         })
@@ -77,7 +78,7 @@ const styles = StyleSheet.create({
     },
     itemText: {
         color: 'black',
-        paddingHorizontal: 10,
+        paddingHorizontal: 10
     },
     noResultView: {
         alignSelf: 'center',

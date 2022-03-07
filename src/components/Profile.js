@@ -6,7 +6,8 @@ import { Constants } from "../constants/Constants"
 
 const mapStateToProps = (state) => {
     return {
-        user: state.user
+        user: state.user,
+        chat: state.chat
     }
 }
 
@@ -56,16 +57,8 @@ class Profile extends React.Component {
     
             <View style={styles.userInfoWrapper}>
               <View style={styles.userInfoItem}>
-                <Text style={styles.userInfoTitle}>3</Text>
+                <Text style={styles.userInfoTitle}>{this.props.chat.chatUsers.length}</Text>
                 <Text style={styles.userInfoSubTitle}>Chats</Text>
-              </View>
-              <View style={styles.userInfoItem}>
-                <Text style={styles.userInfoTitle}>10</Text>
-                <Text style={styles.userInfoSubTitle}>Groups</Text>
-              </View>
-              <View style={styles.userInfoItem}>
-                <Text style={styles.userInfoTitle}>10000</Text>
-                <Text style={styles.userInfoSubTitle}>Messages</Text>
               </View>
             </View>
         </SafeAreaView>

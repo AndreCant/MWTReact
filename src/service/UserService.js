@@ -1,6 +1,5 @@
-import { async } from "@firebase/util";
 import { updateProfile } from "firebase/auth";
-import { addDoc, collection, doc, endAt, getDoc, getDocs, limit, onSnapshot, orderBy, query, startAt, updateDoc, where } from "firebase/firestore";
+import { addDoc, collection, doc, getDocs, limit, orderBy, query, startAt, updateDoc, where } from "firebase/firestore";
 import { auth, database } from "../config/Firebase";
 
 const collectionRef = collection(database, 'users');
@@ -44,7 +43,7 @@ export async function updateUser(user){
             documentId = doc.id
             return;
         });
-    
+
         if (documentId) {
             const ref = doc(database, 'users', documentId);
         
@@ -56,21 +55,25 @@ export async function updateUser(user){
     }
 }
 
-export async function getUsersByRefIds(ids){
+export async function getUsersByRefIds(userIds){
     const users = [];
+    const ids = Object.keys(userIds);
 
     if (ids && ids.length) {
         const qry = query(collectionRef, where('userRefId', 'in', ids));
         const usersDoc = await getDocs(qry);
-    
+
         usersDoc.forEach(doc => {
             users.push({
                 userRefId: doc.data().userRefId,
                 username: doc.data().username,
-                avatar: doc.data().avatar
+                avatar: doc.data().avatar,
+                createdAt: String(new Date(userIds[doc.data().userRefId].createdAt.seconds * 1000))
             });
         });
     }
-    
+
+    users.sort((a, b) => { return a.createdAt < b.createdAt ? 1 : -1; });
+
     return users;
 }
