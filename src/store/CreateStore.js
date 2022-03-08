@@ -14,7 +14,6 @@ export default (reducers) => {
     const persistConfig = {
         key: 'root',
         storage: AsyncStorage,
-        blacklist: 'user'
     };
 
     const persistedReducer = persistReducer(persistConfig, reducers);
