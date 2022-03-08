@@ -24,17 +24,8 @@ export default function Home() {
     }, [navigation]);
 
     return (
-        <View style={StyleSheet.container}>
+        <View>
             <ChatList onChat={(user) => navigation.navigate(Constants.routes.chat, { userChat: user, title: user.username })}/>
         </View>
     );
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'flex-end',
-        alignItems: 'flex-end',
-        backgroundColor: '#fff'
-    }
-});
