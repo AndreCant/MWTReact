@@ -19,13 +19,17 @@ export default {
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "it.mwt.mwtchat",
+      "buildNumber": "1.0.0"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "package": "it.mwt.mwtchat",
+      "versionCode": 1
     },
     "web": {
       "favicon": "./assets/favicon.png"
