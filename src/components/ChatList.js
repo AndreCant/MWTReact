@@ -67,7 +67,7 @@ class ChatList extends React.Component {
 
         // Is same day
         if (date.getFullYear() === today.getFullYear() && date.getMonth() === today.getMonth() && date.getDate() === today.getDate()) { 
-          dateToShow = `${date.getHours()}:${date.getMinutes()}`;
+          dateToShow = `${date.getHours()}:${date.getMinutes() > 9 ? date.getMinutes() : '0' + date.getMinutes()}`;
         }else{
           // Is yestarday
           const yesterday = new Date();
